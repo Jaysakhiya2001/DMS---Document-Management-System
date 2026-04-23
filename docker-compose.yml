@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: vistra-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: vistra_dms
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  minio:
+    image: minio/minio
+    container_name: vistra-minio
+    restart: always
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+  # backend:
+  #   build: ./backend
+  #   container_name: vistra-backend
+  #   restart: always
+  #   environment:
+  #     PORT: 4000
+  #     FRONTEND_ORIGIN: "http://localhost:3000"
+  #     DB_HOST: mysql
+  #     DB_PORT: 3306
+  #     DB_USER: root
+  #     DB_PASSWORD: root
+  #     DB_NAME: vistra_dms
+  #   ports:
+  #     - "4000:4000"
+  #   depends_on:
+  #     - mysql
+
+  # frontend:
+  #   build: ./frontend
+  #   container_name: vistra-frontend
+  #   restart: always
+  #   environment:
+  #     NEXT_PUBLIC_API_URL: "http://localhost:4000/api/v1"
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - backend
+
+volumes:
+  mysql_data:
+  minio_data:
